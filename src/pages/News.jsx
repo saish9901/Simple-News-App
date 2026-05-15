@@ -1,44 +1,58 @@
-import axios from "axios"
-import Wrapper from "../components/Wrapper"
 import { useEffect } from "react"
-import api from "../config/axios"
+import Wrapper from "../components/Wrapper"
+import { useNewsContext } from "../context/NewsContext"
+import Loader from "../components/Loader"
 
 
 const News = () => {
 
-    const fetchNews = async () => {
-        const response = await api.get(`/everything?q=bitcoin&apiKey=${import.meta.env.VITE_API_KEY}`)
-    }
+    const { news, setNews, fetchNews, loading } = useNewsContext()
 
-    const newsData = useEffect(() => {
-        fetchNews()
+    useEffect(() => {
+        (async () => {
+            const data = await fetchNews();
+            setNews(data.articles)
+        })()
     }, [])
+
+    if(loading) return <Loader/>
+
 
     return (
         <Wrapper>
             <div className="grid grid-cols-4 gap-8 max-[900px]:grid-cols-3 max-[700px]:grid-cols-2 max-[500px]:grid-cols-1">
-                <NewsCard />
+                {news.map((news,index) => {
+                    if(!news.urlToImage){
+                        return null
+                    }
+                    return (
+                        <NewsCard news={news} key={index}/>
+                    )
+                })}
+
             </div>
         </Wrapper>
     )
 }
 
-const NewsCard = () => {
+const NewsCard = ({news}) => {
     return (
         <div className="card bg-base-300 shadow-sm">
             <figure>
                 <img
-                    src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                 className="aspect-video object-cover"
+                    src={news?.urlToImage}
                     alt="Shoes" />
             </figure>
             <div className="card-body">
-                <h2 className="card-title">Card Title</h2>
-                <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
+                <h2 className="card-title line-clamp-2">{news?.title}</h2>
+                <p className="line-clamp-4">{news?.description}</p>
                 <div className="card-actions justify-end">
-                    <button className="btn btn-primary">Buy Now</button>
+                    <button onClick={()=>window.open(news?.url)} className="btn badge-outline mt-5">Read More</button>
                 </div>
             </div>
         </div>
     )
 }
 export default News
+export {NewsCard}
