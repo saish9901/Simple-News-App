@@ -17,6 +17,7 @@ Users can browse and read the latest news with smooth and easy navigation.
 - Clean and simple UI
 - Fast navigation between pages
 - Real-time news fetching using APIs
+- Search feature
 - Responsive design
 - Category-based news browsing
 
